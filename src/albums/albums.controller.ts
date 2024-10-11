@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Model } from 'mongoose';
 import { Album, AlbumDocument } from 'src/schemas/album.schema';
 import { CreateAlbumDto } from './create-album.dto';
+import { QueryParamDto } from 'src/tracks/create-track.dto';
 
 @Controller('albums')
 export class AlbumsController {
@@ -13,7 +14,10 @@ export class AlbumsController {
     ){}
 
     @Get()
-    getAll(){
+    getAll(@Query() reqParam: QueryParamDto){
+        if (reqParam.filter) {
+            return this.albumModel.find({artist: reqParam.filter}); 
+        }
         return this.albumModel.find();
     }
 

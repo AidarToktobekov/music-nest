@@ -26,4 +26,4 @@ export class Track{
     isPublished: boolean;
 }
 
-export const ArtistSchema = SchemaFactory.createForClass(Track);
+export const TrackSchema = SchemaFactory.createForClass(Track);
