@@ -14,10 +14,13 @@ export class Album{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Artist',
     })
-    album: Artist;
+    artist: Artist;
 
     @Prop()
     image: string;
+
+    @Prop({required: true})
+    date: Date;
 
     @Prop({required: true})
     isPublished: boolean;

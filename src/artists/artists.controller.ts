@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Req, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Req, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Artist, ArtistDocument } from 'src/schemas/artist.schema';
@@ -20,9 +20,10 @@ export class ArtistsController {
     getOne(@Param('id') id: string){
         return this.artistModel.findById({_id: id});
     }
+
     @Post()
     @UseInterceptors(
-        FileInterceptor('image', {dest: './public/products'}),
+        FileInterceptor('image', {dest: './public/artists'}),
     )
     create(
         @UploadedFile() file: Express.Multer.File,
@@ -31,10 +32,15 @@ export class ArtistsController {
         const artist = new this.artistModel({
             name: artistDto.name,
             description: artistDto.description? artistDto.description : null,
-            image: file? `/products/${file.filename}` : null,
+            image: file? `/artists/${file.filename}` : null,
             isPublished: false,
         });      
         
         return artist.save();
+    }
+
+    @Delete(':id')
+    remove(@Param('id') id: string){
+        return this.artistModel.findByIdAndDelete({_id: id});
     }
 }
