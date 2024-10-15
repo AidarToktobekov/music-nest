@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from 'src/schemas/user.schema';
@@ -24,8 +24,6 @@ export class UsersController {
     @UseGuards(AuthGuard('local'))
     @Post('sessions')
     async login(@Req() req: Request) {
-        console.log(req.body);
-        
         return req.user;  
     }
 
@@ -33,6 +31,20 @@ export class UsersController {
     @Get('secret')
     async secret(@Req() req: Request) {
       return req.user;
+    }
+
+    
+    @UseGuards(TokenAuthGuard)
+    @Delete('sessions')
+    async logout(@Req() req: Request) {
+        const headerValue = req.get('Authorization');
+        const [, token] = headerValue.split(' ');
+        const user = await this.userModel.findOne({token});
+        console.log(token);
+        
+        user.generateToken();
+        user.save();
+        return 'ok';  
     }
 }
   

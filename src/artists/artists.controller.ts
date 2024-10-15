@@ -1,9 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UploadedFile, UseInterceptors, UseGuards, Req } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Artist, ArtistDocument } from 'src/schemas/artist.schema';
 import { CreateArtistDto } from './create-artist.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { TokenAuthGuard } from 'src/auth/token-auth.guard';
+import { Request } from 'express';
+import { AdminAuthGuard } from 'src/auth/admin-auth.guard';
 
 @Controller('artists')
 export class ArtistsController {
@@ -16,11 +19,13 @@ export class ArtistsController {
     getAll(){
         return this.artistModel.find();
     }
+
     @Get(':id')
     getOne(@Param('id') id: string){
         return this.artistModel.findById({_id: id});
     }
 
+    @UseGuards(TokenAuthGuard)
     @Post()
     @UseInterceptors(
         FileInterceptor('image', {dest: './public/artists'}),
@@ -39,8 +44,9 @@ export class ArtistsController {
         return artist.save();
     }
 
+    @UseGuards(AdminAuthGuard)
     @Delete(':id')
-    remove(@Param('id') id: string){
+    async remove(@Param('id') id: string , @Req() req: Request){
         return this.artistModel.findByIdAndDelete({_id: id});
     }
 }

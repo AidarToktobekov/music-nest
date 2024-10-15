@@ -5,7 +5,6 @@ import { User, UserDocument } from 'src/schemas/user.schema';
 
 @Injectable()
 export class AuthService {
-
     constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
     async validateUser(username: string, pass: string) {

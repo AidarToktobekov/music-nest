@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { User, UserDocument } from 'src/schemas/user.schema';
 
 @Injectable()
-export class TokenAuthGuard implements CanActivate {
+export class AdminAuthGuard implements CanActivate {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -16,6 +16,10 @@ export class TokenAuthGuard implements CanActivate {
     const [,token] = headerValue.split(' ');
     const user = await this.userModel.findOne({ token });
     if (!user) {
+      return false;
+    }
+
+    if (user.role !== 'admin') {
       return false;
     }
 
