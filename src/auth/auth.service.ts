@@ -8,9 +8,9 @@ export class AuthService {
 
     constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-    async validateUser(email: string, pass: string) {
+    async validateUser(username: string, pass: string) {
   
-    const user = await this.userModel.findOne({ email });
+    const user = await this.userModel.findOne({ username });
     
     if (user && (await user.checkPassword(pass))) {
         user.generateToken();
